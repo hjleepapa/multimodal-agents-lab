@@ -1,7 +1,7 @@
 # multimodal-agents-lab
 A self-contained multimodal AI agents lab built using MongoDB, Gemini, and good ol' Python.
 
-Slides accompanying this lab can be found [here](https://docs.google.com/presentation/d/e/2PACX-1vR3YoEwBOHTj3ai90BiDohGbusGwg-IB16A20vtBTq3Bg5wcdhFSYYgVmhza9aXYOhkAkTiQySR8AuC/pub).
+Slides accompanying this lab can be found [here](https://docs.google.com/presentation/d/e/2PACX-1vSisQE5BC-GvcMCndEozosE22ZZFzhe0_9Kg8IEjkgHB9AlWXmijYpD0FFO_Nvjzt6RkrgzZSF__LcF/pub).
 
 **NOTE:** In this lab, we will be using Jupyter Notebooks, which is an interactive Python environment. If you are new to Jupyter Notebooks, use [this](https://mongodb-developer.github.io/vector-search-lab/docs/dev-env/jupyter-notebooks) guide to familiarize yourself with the environment.
 
