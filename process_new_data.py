@@ -117,7 +117,7 @@ def process_image_file(image_path):
         return []
 
 def process_text_file(text_path):
-    """Process a text file or DOCX file"""
+    """Process a text file, DOCX file, or JSON file"""
     print(f"Processing text file: {text_path}")
     
     try:
@@ -139,6 +139,34 @@ def process_text_file(text_path):
                     content += "\n"
             
             print(f"Extracted {len(content)} characters from DOCX file")
+            
+        elif text_path.lower().endswith('.json'):
+            # Process JSON file
+            with open(text_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Convert JSON to readable text format
+            content = f"Imaging Metadata for {os.path.basename(text_path)}:\n"
+            content += f"Modality: {data.get('Modality', 'Unknown')}\n"
+            content += f"Manufacturer: {data.get('Manufacturer', 'Unknown')}\n"
+            content += f"Body Part: {data.get('BodyPartExamined', 'Unknown')}\n"
+            content += f"Sequence: {data.get('SequenceName', 'Unknown')}\n"
+            content += f"Echo Time: {data.get('EchoTime', 'Unknown')}\n"
+            content += f"Repetition Time: {data.get('RepetitionTime', 'Unknown')}\n"
+            content += f"Slice Thickness: {data.get('SliceThickness', 'Unknown')}\n"
+            content += f"Flip Angle: {data.get('FlipAngle', 'Unknown')}\n"
+            content += f"Base Resolution: {data.get('BaseResolution', 'Unknown')}\n"
+            content += f"Pixel Bandwidth: {data.get('PixelBandwidth', 'Unknown')}\n"
+            
+            # Add additional technical details
+            if 'ShimSetting' in data:
+                content += f"Shim Settings: {data['ShimSetting']}\n"
+            if 'SliceTiming' in data:
+                content += f"Slice Timing: {len(data['SliceTiming'])} slices\n"
+            if 'AcquisitionMatrixPE' in data:
+                content += f"Acquisition Matrix: {data['AcquisitionMatrixPE']}\n"
+            
+            print(f"Extracted {len(content)} characters from JSON file")
             
         else:
             # Process regular text file
@@ -221,7 +249,7 @@ def process_directory(directory_path, file_type="auto"):
                     docs = process_pdf_file(file_path)
                 elif filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                     docs = process_image_file(file_path)
-                elif filename.lower().endswith(('.txt', '.md', '.csv', '.docx')):
+                elif filename.lower().endswith(('.txt', '.md', '.csv', '.docx', '.json')):
                     docs = process_text_file(file_path)
                 else:
                     print(f"Skipping unsupported file: {filename}")
@@ -232,7 +260,7 @@ def process_directory(directory_path, file_type="auto"):
                     docs = process_pdf_file(file_path)
                 elif file_type == "image" and filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                     docs = process_image_file(file_path)
-                elif file_type == "text" and filename.lower().endswith(('.txt', '.md', '.csv', '.docx')):
+                elif file_type == "text" and filename.lower().endswith(('.txt', '.md', '.csv', '.docx', '.json')):
                     docs = process_text_file(file_path)
                 else:
                     continue
@@ -270,6 +298,11 @@ def main():
         print(f"\n🖼️ Processing Images in {image_dir}")
         image_docs = process_directory(image_dir, "image")
         all_documents.extend(image_docs)
+        
+        # Also process JSON files in images directory
+        print(f"\n📄 Processing JSON files in {image_dir}")
+        json_docs = process_directory(image_dir, "text")
+        all_documents.extend(json_docs)
     
     # Process Text files
     text_dir = "data/text"
