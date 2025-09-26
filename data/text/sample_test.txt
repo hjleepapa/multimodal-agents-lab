@@ -1,0 +1,3 @@
+This is a sample text file for testing.
+It contains multiple lines of text.
+The multimodal agents lab can process both text and DOCX files.

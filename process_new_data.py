@@ -17,6 +17,7 @@ from snowflake.connector import DictCursor
 from dotenv import load_dotenv
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from docx import Document
 
 # Load environment variables
 load_dotenv()
@@ -116,23 +117,44 @@ def process_image_file(image_path):
         return []
 
 def process_text_file(text_path):
-    """Process a text file (placeholder for text processing)"""
+    """Process a text file or DOCX file"""
     print(f"Processing text file: {text_path}")
     
     try:
-        with open(text_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        # Check if it's a DOCX file
+        if text_path.lower().endswith('.docx'):
+            # Process DOCX file
+            doc = Document(text_path)
+            content = ""
+            
+            # Extract text from paragraphs
+            for paragraph in doc.paragraphs:
+                content += paragraph.text + "\n"
+            
+            # Extract text from tables
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        content += cell.text + " "
+                    content += "\n"
+            
+            print(f"Extracted {len(content)} characters from DOCX file")
+            
+        else:
+            # Process regular text file
+            with open(text_path, 'r', encoding='utf-8') as f:
+                content = f.read()
         
-        # For now, we'll create a placeholder entry
-        # In a full implementation, you'd generate embeddings for the text
-        doc = {
+        # Create document entry
+        doc_entry = {
             "key": text_path,
             "content": content[:100] + "..." if len(content) > 100 else content,
-            "type": "text"
+            "type": "text",
+            "full_content": content  # Store full content for potential future use
         }
         
-        print(f"Processed text file: {text_path}")
-        return [doc]
+        print(f"Processed text file: {text_path} ({len(content)} characters)")
+        return [doc_entry]
         
     except Exception as e:
         print(f"Error processing text file {text_path}: {e}")
@@ -199,7 +221,7 @@ def process_directory(directory_path, file_type="auto"):
                     docs = process_pdf_file(file_path)
                 elif filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                     docs = process_image_file(file_path)
-                elif filename.lower().endswith(('.txt', '.md', '.csv')):
+                elif filename.lower().endswith(('.txt', '.md', '.csv', '.docx')):
                     docs = process_text_file(file_path)
                 else:
                     print(f"Skipping unsupported file: {filename}")
@@ -210,7 +232,7 @@ def process_directory(directory_path, file_type="auto"):
                     docs = process_pdf_file(file_path)
                 elif file_type == "image" and filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                     docs = process_image_file(file_path)
-                elif file_type == "text" and filename.lower().endswith(('.txt', '.md', '.csv')):
+                elif file_type == "text" and filename.lower().endswith(('.txt', '.md', '.csv', '.docx')):
                     docs = process_text_file(file_path)
                 else:
                     continue

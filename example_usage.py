@@ -43,8 +43,9 @@ def main():
         print("\n📝 Example 3: Processing a text file")
         print("To add a text file:")
         print("1. Copy your text to: data/text/your_document.txt")
-        print("2. Run: python process_new_data.py")
-        print("3. Query the agent about the text")
+        print("2. Copy your Word doc to: data/text/your_report.docx")
+        print("3. Run: python process_new_data.py")
+        print("4. Query the agent about the text")
         
         # Example 4: Query the agent
         print("\n🤖 Example 4: Querying the AI agent")

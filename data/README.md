@@ -48,14 +48,16 @@ python process_new_data.py
 
 ### 3. **Text Files** 📝
 - **Location**: `data/text/`
-- **Supported formats**: `.txt`, `.md`, `.csv`
-- **Processing**: Reads content and prepares for text embedding (placeholder implementation)
+- **Supported formats**: `.txt`, `.md`, `.csv`, `.docx`
+- **Processing**: Reads content and prepares for text embedding
+- **DOCX Support**: Extracts text from paragraphs and tables in Word documents
 
 **Example**:
 ```bash
 # Add your text files
 cp your_document.txt data/text/
 cp your_notes.md data/text/
+cp your_report.docx data/text/
 
 # Process the text files
 python process_new_data.py
