@@ -323,11 +323,40 @@ def generate_answer(conn, gemini_client, LLM, user_query: str, images: List = []
     for image_path in images:
         try:
             if os.path.exists(image_path):
-                contents.append(Image.open(image_path))
+                # Check if it's an image file
+                if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+                    contents.append(Image.open(image_path))
+                else:
+                    # For text files, read the content and add as text
+                    try:
+                        if image_path.lower().endswith('.docx'):
+                            # Handle DOCX files
+                            from docx import Document
+                            doc = Document(image_path)
+                            text_content = ""
+                            for paragraph in doc.paragraphs:
+                                text_content += paragraph.text + "\n"
+                            for table in doc.tables:
+                                for row in table.rows:
+                                    for cell in row.cells:
+                                        text_content += cell.text + " "
+                                    text_content += "\n"
+                        else:
+                            # Handle regular text files
+                            with open(image_path, 'r', encoding='utf-8') as f:
+                                text_content = f.read()
+                        
+                        # Limit content length to avoid token limits
+                        if len(text_content) > 8000:
+                            text_content = text_content[:8000] + "... [truncated]"
+                        
+                        contents.append(f"Document content from {image_path}:\n{text_content}")
+                    except Exception as text_error:
+                        print(f"Warning: Could not read text file {image_path}: {text_error}")
             else:
-                print(f"Warning: Image file not found: {image_path}")
+                print(f"Warning: File not found: {image_path}")
         except Exception as e:
-            print(f"Warning: Could not load image {image_path}: {e}")
+            print(f"Warning: Could not load file {image_path}: {e}")
 
     # Get the response from the LLM
     response = gemini_client.models.generate_content(
